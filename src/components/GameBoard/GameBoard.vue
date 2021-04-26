@@ -121,5 +121,6 @@ export default defineComponent({
   display: inline-flex;
   border: 1px solid black;
   background-color: rgb(3, 82, 82);
+  background-image: url("https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/animated-water.gif");
 }
 </style>

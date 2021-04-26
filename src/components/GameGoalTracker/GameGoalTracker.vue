@@ -17,6 +17,9 @@ import { defineComponent, reactive } from 'vue';
 
 export default defineComponent({
   computed: {
+    /**
+     * description of the dificulty based on the maximum life the player started the game
+     */
     dificulty() {
       if (this.data.maxLife > 8) { return 'Novice'; }
       if (this.data.maxLife > 7) { return 'Easy'; }
@@ -24,14 +27,32 @@ export default defineComponent({
       if (this.data.maxLife > 5) { return 'Expert'; }
       return 'Evil';
     },
+
+    /**
+     * The description of the city's depth based on the water level ratio
+     */
     depthLevel() {
+      if (this.data.livesRemaining <= 0) { return 'Game Over'; }
       const waterLevel = this.data.livesRemaining / this.data.maxLife;
       if (waterLevel <= 0.2) { return 'Danger'; }
       if (waterLevel <= 0.4) { return 'Warning'; }
       if (waterLevel <= 0.6) { return 'Caution'; }
       return 'Safe';
     },
+
+    /**
+     * The speed to which the flood cards are consumed.
+     * The more the players have less lives remaining the faster it goes.
+     */
+    drownSpeed() {
+      if (this.data.livesRemaining <= 0) { return 0; }
+      if (this.data.livesRemaining <= 2) { return 5; }
+      if (this.data.livesRemaining <= 4) { return 4; }
+      if (this.data.livesRemaining <= 7) { return 3; }
+      return 2;
+    },
   },
+
   setup() {
     const data = reactive({
       maxLife: 7,
