@@ -1,7 +1,9 @@
 <template>
-  <section v-if="tileNumber > 0" class="scaleable-tile" @click="flood">
+  <section v-if="tileNumber > 0" class="scaleable-tile" @mousedown="flood"
+    oncontextmenu="return false">
     <img class="bg-image" :src="imgSrc" ref="imgRef" />
-    <img v-if="data.sunkLevel === 2" class="skull" src="https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/tiles/skull.png" />
+    <img v-if="data.sunkLevel === 2" class="skull"
+     src="https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/tiles/skull.png" />
     <div class='tile-name' ref="tileNameRef">{{ tileName }}</div>
   </section>
 </template>
@@ -25,14 +27,18 @@ export default defineComponent({
       sunkLevel: 0,
     });
 
-    const flood = () => {
-      data.sunkLevel += 1;
+    const flood = (e: MouseEvent) => {
+      if (e.button === 0) {
+        data.sunkLevel += 1;
+        if (data.sunkLevel > 2) data.sunkLevel = 0;
+      } else if (e.button === 2 && data.sunkLevel > 0) {
+        data.sunkLevel -= 1;
+      }
       if (data.sunkLevel === 1) {
         imgRef.value.style.opacity = '0.5';
       } else if (data.sunkLevel === 2) {
         imgRef.value.style.opacity = '0.1';
       } else {
-        data.sunkLevel = 0;
         imgRef.value.style.opacity = '1.0';
       }
     };

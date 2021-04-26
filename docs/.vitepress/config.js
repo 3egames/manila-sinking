@@ -13,7 +13,8 @@ module.exports = {
     sidebar: [
       { text: 'Components', link: '/components/', children: [ 
         { text: 'GameBoard', collapsable: true, link: '/components/game-board/'},
-        { text: 'GameTile', collapsable: true, link: '/components/game-tile/'}  
+        { text: 'GameTile', collapsable: true, link: '/components/game-tile/'},
+        { text: 'GameGoalTracker', collapsable: true, link: '/components/game-goal-tracker/'}  
       ]},
     ],
   }
