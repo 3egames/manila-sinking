@@ -1,7 +1,7 @@
 <template>
   <section v-if="tileNumber > 0" class="scaleable-tile">
+    <img :src="imgSrc" />
     <div class='tile-name' ref="tileNameRef">{{ tileName }}</div>
-    <img src="../../assets/tiles/1.png" />
   </section>
 </template>
 
@@ -10,25 +10,20 @@ import { defineComponent, onMounted, ref } from 'vue';
 
 export default defineComponent({
   props: {
-    tileName: {
-      type: String,
-      required: true,
-    },
-    tileNumber: {
-      type: Number,
-      required: true,
-    },
+    tileName: { type: String, required: true },
+    tileNumber: { type: Number, required: true },
+    tileSize: { type: Number, required: true },
   },
-  setup() {
+  setup(props) {
+    const GITHUB_ASSETS_URL = 'https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/';
     const tileNameRef = ref<any>();
     onMounted(() => {
-      // perform auto text scale based on parent node scale
-      if (tileNameRef?.value) {
-        console.log(parseFloat(tileNameRef.value.parentNode.clientHeight));
-        tileNameRef.value.style.fontSize = `${(parseFloat(tileNameRef.value.parentNode.clientWidth) / 130).toString()}em`;
+      if (tileNameRef.value) {
+        tileNameRef.value.style.fontSize = `${props.tileSize / 120}em`;
       }
     });
     return {
+      imgSrc: `${GITHUB_ASSETS_URL}tiles/${props.tileNumber}.png`,
       tileNameRef,
     };
   },
@@ -37,6 +32,7 @@ export default defineComponent({
 
 <style scoped>
 .scaleable-tile {
+  user-select: none;
   display: flex;
   position: relative;
   justify-content: center;

@@ -1,15 +1,18 @@
 <template>
-  <section>
-    <div v-for="y in 6" :key="y">
+  <section class="game-board">
+    <div class="row" v-for="y in 6" :key="y" :ref="setRowElement">
       <span :class="{ 'game-tile': true, 'sunk': data.tiles[y][x] === -1 }" v-for="x in 6" :key="x">
-        <game-tile :tileName="TileTypes[data.tiles[y][x]]" :tileNumber="data.tiles[y][x]" />
+        <game-tile :tileName="TileTypes[data.tiles[y][x]]"
+        :tileNumber="data.tiles[y][x]" :tileSize="boardSize/6" :ref="setTileRefs"/>
       </span>
     </div>
   </section>
 </template>
 
 <script lang='ts'>
-import { defineComponent, onBeforeMount, reactive } from 'vue';
+import {
+  defineComponent, onBeforeMount, onBeforeUpdate, onMounted, reactive,
+} from 'vue';
 import GameTile from '../GameTile/GameTile.vue';
 
 enum TileTypes {
@@ -28,10 +31,28 @@ interface Data {
 export default defineComponent({
   name: 'game-board',
   components: { GameTile },
-  setup() {
+  props: {
+    boardSize: { type: Number, required: true },
+  },
+  setup(props) {
+    let tileRefs: any[] = [];
+    let rowRef: any[] = [];
     const data = reactive<Data>({
       tiles: [],
     });
+
+    onBeforeUpdate(() => {
+      rowRef = [];
+      tileRefs = []; // reset every update
+    });
+
+    const setTileRefs = (el: any) => {
+      if (el) { tileRefs.push(el); }
+    };
+
+    const setRowElement = (el: any) => {
+      if (el) { rowRef.push(el); }
+    };
 
     const resetBoard = () => {
       const usedTiles: boolean[] = [];
@@ -66,7 +87,24 @@ export default defineComponent({
       resetBoard();
     });
 
+    onMounted(() => {
+      const sideSize = `${props.boardSize / 6}px`;
+      rowRef.forEach((row) => {
+        // eslint-disable-next-line no-param-reassign
+        row.style.width = `${props.boardSize}px`;
+      });
+
+      tileRefs.forEach((tile) => {
+        // eslint-disable-next-line no-param-reassign
+        if (tile.$el.parentNode) tile.$el.parentNode.style.width = sideSize;
+        // eslint-disable-next-line no-param-reassign
+        if (tile.$el.parentNode) tile.$el.parentNode.style.height = sideSize;
+      });
+    });
+
     return {
+      setTileRefs,
+      setRowElement,
       data,
       resetBoard,
       TileTypes,
@@ -76,14 +114,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.game-board .row{
+  display: flex;
+}
 .game-tile {
-  user-select: none;
   display: inline-flex;
-  min-width: 100px;
-  min-height: 100px;
-  width: 100px;
   border: 1px solid black;
-  margin: 2px;
 }
 
 .sunk {
