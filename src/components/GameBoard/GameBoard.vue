@@ -81,6 +81,7 @@ export default defineComponent({
   display: inline-flex;
   min-width: 100px;
   min-height: 100px;
+  width: 100px;
   border: 1px solid black;
   margin: 2px;
 }

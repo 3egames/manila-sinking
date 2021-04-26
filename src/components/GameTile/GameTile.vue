@@ -1,12 +1,12 @@
 <template>
   <section v-if="tileNumber > 0" class="scaleable-tile">
-    <div class='tile-name'>{{ tileName }}</div>
+    <div class='tile-name' ref="tileNameRef">{{ tileName }}</div>
     <img src="../../assets/tiles/1.png" />
   </section>
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 
 export default defineComponent({
   props: {
@@ -20,7 +20,16 @@ export default defineComponent({
     },
   },
   setup() {
+    const tileNameRef = ref<any>();
+    onMounted(() => {
+      // perform auto text scale based on parent node scale
+      if (tileNameRef?.value) {
+        console.log(parseFloat(tileNameRef.value.parentNode.clientHeight));
+        tileNameRef.value.style.fontSize = `${(parseFloat(tileNameRef.value.parentNode.clientWidth) / 130).toString()}em`;
+      }
+    });
     return {
+      tileNameRef,
     };
   },
 });
@@ -28,23 +37,25 @@ export default defineComponent({
 
 <style scoped>
 .scaleable-tile {
-  position: absolute;
-  max-height:100px;
-  max-width:100px;
+  display: flex;
+  position: relative;
+  justify-content: center;
 }
 .scaleable-tile img {
   z-index: 1;
-  max-width:100%;
-  max-height:100%;
+  width:100%;
+  height:auto;
 }
 .tile-name {
-  font-size: .8em;
+  border: inset 3px darkslategray;
+  font-size: 2vh;
   position: absolute;
   z-index: 2;
-  width: 100%;
+  width: 99%;
+  height: 20%;
   background-color: burlywood;
   text-align: center;
-  bottom: 1px;
-  margin: 1px;
+  bottom: 1%;
+  display: inline-table;
 }
 </style>
