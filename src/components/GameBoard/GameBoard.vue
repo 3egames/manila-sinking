@@ -21,7 +21,7 @@ enum TileTypes {
   portarea = 9, intramuros = 10, ermita = 11, malate = 12,
   paco = 13, pandacan = 14, staana = 15, sanandres = 16,
   divisoria = 17, chinatown = 18, universitybelt = 19, malacanang = 20,
-  manilaport = 21, nationalmuseum = 22, rizalmemorial = 23, philippinenavy = 24
+  cityhall = 21, nationalmuseum = 22, rizalmemorial = 23, philippinenavy = 24
 }
 
 interface Data {
