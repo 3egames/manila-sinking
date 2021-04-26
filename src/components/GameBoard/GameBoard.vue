@@ -1,7 +1,7 @@
 <template>
   <section class="game-board">
     <div class="row" v-for="y in 6" :key="y" :ref="setRowElement">
-      <span :class="{ 'game-tile': true, 'sunk': data.tiles[y][x] === -1 }" v-for="x in 6" :key="x">
+      <span class="game-tile" v-for="x in 6" :key="x">
         <game-tile :tileName="TileTypes[data.tiles[y][x]]"
         :tileNumber="data.tiles[y][x]" :tileSize="boardSize/6" :ref="setTileRefs"/>
       </span>
@@ -120,9 +120,6 @@ export default defineComponent({
 .game-tile {
   display: inline-flex;
   border: 1px solid black;
-}
-
-.sunk {
   background-color: rgb(3, 82, 82);
 }
 </style>

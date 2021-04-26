@@ -1,5 +1,8 @@
 # GameTile
 The game-tile serves as the smallest unit on the board. 24 tiles will make up the entire play area. Each tile will represent a unique location defined by the game-board component
+* The component will be sized based on the parent container hosting it, however, you will need to provide the tileSize (basically the same for width and height value as its a square).
+If for example the containing parent will be 100px, provide 100 for the tileSize.
+* You can click on the tile to make it sink. the first click sends it to a warning level, then another will switch it to a dead zone. clicking again restarts the tile
 
 ## Sample:
 <div style="width: 50px;">
