@@ -1,3 +1,3 @@
-import GameCharacterSheet from './GameCharacterSheet.vue';
+import GameGoalTracker from './GameGoalTracker.vue';
 
-export default GameCharacterSheet;
+export default GameGoalTracker;

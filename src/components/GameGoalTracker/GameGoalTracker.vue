@@ -7,15 +7,29 @@
         <div>Depth Level: {{ depthLevel }}</div>
         <span :class="{counters: true, skull: (data.maxLife - n + 1) > data.livesRemaining }"
           v-for="n in data.maxLife" :key="n" />
+        <div>Achieved Objectives: [{{ data.completedObjectives.length }}/4]</div>
+        <span class='objective-icons'>
+          <img v-for="(n, i) in data.completedObjectives" :key="i" @click="selectItem(i, n)"
+          :src="`https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/${data.completedObjectives[i]}.png`">
+        </span>
       </section>
     </section>
   </section>
 </template>
 
 <script lang='ts'>
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, onBeforeMount, reactive } from 'vue';
+
+interface Data {
+  maxLife: number,
+  livesRemaining: number,
+  completedObjectives: number[],
+}
 
 export default defineComponent({
+  props: {
+    demo: { type: Boolean, default: false },
+  },
   computed: {
     /**
      * description of the dificulty based on the maximum life the player started the game
@@ -53,10 +67,11 @@ export default defineComponent({
     },
   },
 
-  setup() {
-    const data = reactive({
+  setup(props, { emit }) {
+    const data = reactive<Data>({
       maxLife: 7,
       livesRemaining: 7,
+      completedObjectives: [],
     });
 
     const restart = (lives: number) => {
@@ -66,10 +81,28 @@ export default defineComponent({
 
     const increaseDepth = () => {
       if (data.livesRemaining > 0) data.livesRemaining -= 1;
+      if (data.livesRemaining <= 0) emit('defeated');
     };
+
+    const completeObjective = (objectiveCode: number) => {
+      if (data.completedObjectives.indexOf(objectiveCode) < 0) {
+        data.completedObjectives.push(objectiveCode);
+        if (data.completedObjectives.length >= 4) emit('victory');
+      }
+      throw new Error(`Objective #${objectiveCode} already achieved.`);
+    };
+
+    onBeforeMount(() => {
+      if (props.demo) {
+        data.maxLife = 7;
+        data.livesRemaining = 4;
+        data.completedObjectives = [3, 2];
+      }
+    });
 
     return {
       data,
+      completeObjective,
       increaseDepth,
       restart,
     };
@@ -79,13 +112,12 @@ export default defineComponent({
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css?family=Frijole');
-@import url('https://fonts.googleapis.com/css?family=Oxygen+Mono');
 
 .game-goal-tracker {
   user-select: none;
   text-align: center;
   font-family: Frijole, 'Courier New', Courier, monospace;
-  color: #ddd;
+  color: white;
   border: 20px black;
   background-color: darkcyan;
 }
@@ -112,5 +144,13 @@ export default defineComponent({
 
 .skull {
   background-image: url("https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/tiles/skull.png");
+}
+
+.objective-icons {
+  display: inline-flex;
+  min-height: 70px;
+}
+.objective-icons img {
+  height: 50px;
 }
 </style>

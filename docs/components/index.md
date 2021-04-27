@@ -4,9 +4,10 @@ The Game's sub-components here are defined for educational purposes. The main ga
 
 ## Sample:
 <section style="width: 700px">
-  <GameGoalTracker />
+  <GameGoalTracker :demo="true" />
   <GameBoard :boardSize="700" />
-  <GameCharacterSheet />
+  <GameCharacterSheet :survivorId="1" :demo="true" />
+  <GameCharacterSheet :survivorId="2" :demo="true" />
 </section>
 
 <script setup>

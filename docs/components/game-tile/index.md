@@ -24,10 +24,10 @@ If for example the containing parent will be 100px, provide 100 for the tileSize
   <GameTile tileName="300px Tile" :tileSize="300" :tileNumber="3" />
 </div>
 
-## Source Code:
+<!-- ## Source Code:
 <SourceCode>
 <<< @/../src/components/GameTile/GameTile.vue
-</SourceCode>
+</SourceCode> -->
 
 <script setup>
   import GameTile from '../../../src/components/GameTile/GameTile.vue'

@@ -1,15 +1,39 @@
 {
   "name": "manila-sinking",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.0.1",
+  "private": false,
+  "main": "dist/manila-sinking.umd.min.js",
+  "unpkg": "dist/manila-sinking.umd.min.js",
+  "jsdelivr": "dist/manila-sinking.umd.min.js",
+  "author": "Adonis Lee Villamor",
+  "licence": "None",
+  "description": "Survival coop game made with VueJS",
+  "keywords": [
+    "3egames",
+    "manila",
+    "game",
+    "adonis villamor"
+  ],
+  "files": [
+    "dist/*",
+    "src/*"
+  ],
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/3egames/manila-sinking"
+  },
+  "bugs": {
+    "url": "https://github.com/3egames/manila-sinking/issues"
+  },
   "scripts": {
-    "build-library": "vue-cli-service build --target lib --name manila-sinking src/main.ts",
+    "build-lib": "vue-cli-service build --target lib --name manila-sinking src/main.ts",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:serve": "vitepress serve docs",
     "lint": "vue-cli-service lint"
   },
-  "dependencies": {
+  "peerDependencies": {
     "core-js": "^3.6.5",
     "vue": "^3.0.0"
   },
@@ -27,6 +51,6 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-vue": "^7.0.0",
     "typescript": "~4.1.5",
-    "vitepress": "^0.13.0"
+    "vitepress": "^0.13.2"
   }
 }

@@ -1,9 +1,9 @@
 <template>
   <section class="game-board">
-    <div class="row" v-for="y in 6" :key="y" :ref="setRowElement">
-      <span class="game-tile" v-for="x in 6" :key="x">
-        <game-tile :tileName="TileTypes[data.tiles[y][x]]"
-        :tileNumber="data.tiles[y][x]" :tileSize="boardSize/6" :ref="setTileRefs"/>
+    <div class="row" v-for="(key, y) in 6" :key="key" :ref="setRowElement">
+      <span class="game-tile" v-for="(key, x) in 6" :key="x">
+        <game-tile :tileName="TileTypes[getTileValue(x, y)]"
+        :tileNumber="getTileValue(x, y)" :tileSize="boardSize/6" :ref="setTileRefs"/>
       </span>
     </div>
   </section>
@@ -69,7 +69,7 @@ export default defineComponent({
       while (unassignedCards > 0) {
         const currentTile = Math.floor(Math.random() * 24) + 1;
         if (!usedTiles[currentTile]) {
-          data.tiles[nextY + 1][nextX + 1] = currentTile;
+          data.tiles[nextY][nextX] = currentTile;
           nextX += 1;
           // move tile cursor
           if (nextY === 0 && nextX > 3) { nextY = 1; nextX = 1; }
@@ -81,6 +81,14 @@ export default defineComponent({
           unassignedCards -= 1;
         }
       }
+    };
+
+    // we need this due to weird behavior in vue saying data.tiles[x] is undefined
+    const getTileValue = (x: number, y: number) => {
+      if (data.tiles[x]) {
+        return data.tiles[x][y];
+      }
+      return 0;
     };
 
     onBeforeMount(() => {
@@ -106,6 +114,7 @@ export default defineComponent({
       setTileRefs,
       setRowElement,
       data,
+      getTileValue,
       resetBoard,
       TileTypes,
     };

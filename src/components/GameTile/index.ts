@@ -1,3 +1,3 @@
-import GameGoalTracker from './GameGoalTracker.vue';
+import GameTile from './GameTile.vue';
 
-export default GameGoalTracker;
+export default GameTile;

@@ -1,10 +1,8 @@
 const components:any[] = require('./components');
-
 const ComponentLibrary = {
   install(Vue: any, options = {}) {
     for (const c in components) {
       const component = components[c]
-      
       Vue.component(component.name, component)
     }
   }

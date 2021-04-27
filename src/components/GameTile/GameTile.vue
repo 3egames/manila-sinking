@@ -65,8 +65,14 @@ export default defineComponent({
   display: flex;
   position: relative;
   justify-content: center;
-  background-color: firebrick;
+  background-color: maroon;
+  border: solid 3px maroon;
 }
+
+.scaleable-tile:hover {
+  border-color:lime;
+}
+
 .scaleable-tile .bg-image {
   z-index: 1;
   width:100%;

@@ -1,3 +1,3 @@
-import GameTile from './GameTile.vue';
+import GameCharacterSheet from './GameCharacterSheet.vue';
 
-export default GameTile;
+export default GameCharacterSheet;
