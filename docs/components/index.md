@@ -6,9 +6,11 @@ The Game's sub-components here are defined for educational purposes. The main ga
 <section style="width: 700px">
   <GameGoalTracker />
   <GameBoard :boardSize="700" />
+  <GameCharacterSheet />
 </section>
 
 <script setup>
   import GameGoalTracker from '../../src/components/GameGoalTracker/GameGoalTracker.vue'
   import GameBoard from '../../src/components/GameBoard/GameBoard.vue'
+  import GameCharacterSheet from '../../src/components/GameCharacterSheet/GameCharacterSheet.vue'
 </script>

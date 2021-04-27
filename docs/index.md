@@ -15,3 +15,11 @@ features:
     details: Feel free to play the games in our official website 
 footer: Proprietary Software | Copyright © 2020-present 3E Games
 ---
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Cute+Font');
+
+#app {
+  font-family: 'Cute Font', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+</style>
