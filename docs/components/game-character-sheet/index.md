@@ -3,19 +3,14 @@
 The game character sheet allows us to see the characters in play and the cards they carry.
 
 ## Sample:
-<GameCharacterSheet :survivorId="1" :demo="true" @action="onAction" @itemSelected="onItemSelected"
-  :ref="sRef" />
+<GameCharacterSheet :survivorId="1" @action="onAction" @itemSelected="onItemSelected"
+  :isActive="true" actionsRemaining="2" :itemsOnHand="[ 1, 2, 3, 4]" :ref="sRef" />
 
-#### Small screen
+#### Small screen (inactive survivor)
 <section style="width:350px">
-  <GameCharacterSheet :survivorId="2" :demo="true" @action="onAction" @itemSelected="onItemSelected" />
+  <GameCharacterSheet :survivorId="2" @action="onAction" @itemSelected="onItemSelected" 
+  :itemsOnHand="[4, 4]" />
 </section>
-
-
-<!-- ## Source Code:
-<SourceCode>
-<<< @/../src/components/GameCharacterSheet/GameCharacterSheet.vue
-</SourceCode> -->
 
 <script setup>
   import { ref } from 'vue';

@@ -1,7 +1,7 @@
 <template>
   <section class="game-board">
     <div class="row" v-for="(key, y) in 6" :key="key" :ref="setRowElement">
-      <span class="game-tile" v-for="(key, x) in 6" :key="x">
+      <span class="game-tile" v-for="(key, x) in 6" :key="key">
         <game-tile :tileName="TileTypes[getTileValue(x, y)]"
         :tileNumber="getTileValue(x, y)" :tileSize="boardSize/6" :ref="setTileRefs"/>
       </span>

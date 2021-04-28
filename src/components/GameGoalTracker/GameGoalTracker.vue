@@ -3,14 +3,14 @@
     <header class="dificulty">Dificulty: {{ dificulty }}</header>
     <hr />
     <section class="body">
-      <section class="depth" @click="increaseDepth">
-        <div>Depth Level: {{ depthLevel }}</div>
-        <span :class="{counters: true, skull: (data.maxLife - n + 1) > data.livesRemaining }"
-          v-for="n in data.maxLife" :key="n" />
-        <div>Achieved Objectives: [{{ data.completedObjectives.length }}/4]</div>
+      <section class="depth">
+        <div>Depth Level: {{ depthLevelDesc }}</div>
+        <span :class="{counters: true, skull: (i) < depthLevel }"
+          v-for="(n, i) in depthMax" :key="i" />
+        <div>Achieved Objectives: [{{ goalsAchieved.length }}/4]</div>
         <span class='objective-icons'>
-          <img v-for="(n, i) in data.completedObjectives" :key="i" @click="selectItem(i, n)"
-          :src="`https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/${data.completedObjectives[i]}.png`">
+          <img v-for="(n, i) in goalsAchieved" :key="i"
+          :src="`https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/${goalsAchieved[i]}.png`">
         </span>
       </section>
     </section>
@@ -18,94 +18,45 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, onBeforeMount, reactive } from 'vue';
-
-interface Data {
-  maxLife: number,
-  livesRemaining: number,
-  completedObjectives: number[],
-}
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   props: {
-    demo: { type: Boolean, default: false },
+    depthLevel: { type: Number, default: 0 },
+    depthMax: { type: Number, default: 7 },
+    goalsAchieved: {
+      type: Array,
+      default: () => [],
+      validator: (prop: any) => prop.every((e: any) => typeof e === 'number'),
+    },
   },
   computed: {
     /**
      * description of the dificulty based on the maximum life the player started the game
      */
     dificulty() {
-      if (this.data.maxLife > 8) { return 'Novice'; }
-      if (this.data.maxLife > 7) { return 'Easy'; }
-      if (this.data.maxLife > 6) { return 'Normal'; }
-      if (this.data.maxLife > 5) { return 'Expert'; }
-      return 'Evil';
+      if (this.depthMax > 8) { return 'Novice'; }
+      if (this.depthMax > 7) { return 'Easy'; }
+      if (this.depthMax > 6) { return 'Normal'; }
+      if (this.depthMax > 5) { return 'Expert'; }
+      return 'Insane';
     },
 
     /**
      * The description of the city's depth based on the water level ratio
      */
-    depthLevel() {
-      if (this.data.livesRemaining <= 0) { return 'Game Over'; }
-      const waterLevel = this.data.livesRemaining / this.data.maxLife;
-      if (waterLevel <= 0.2) { return 'Danger'; }
-      if (waterLevel <= 0.4) { return 'Warning'; }
-      if (waterLevel <= 0.6) { return 'Caution'; }
+    depthLevelDesc() {
+      if (this.depthLevel >= this.depthMax) { return 'Game Over'; }
+      const waterLevel = this.depthLevel / this.depthMax;
+      if (waterLevel >= 0.8) { return 'Danger'; }
+      if (waterLevel >= 0.6) { return 'Warning'; }
+      if (waterLevel >= 0.4) { return 'Caution'; }
       return 'Safe';
-    },
-
-    /**
-     * The speed to which the flood cards are consumed.
-     * The more the players have less lives remaining the faster it goes.
-     */
-    drownSpeed() {
-      if (this.data.livesRemaining <= 0) { return 0; }
-      if (this.data.livesRemaining <= 2) { return 5; }
-      if (this.data.livesRemaining <= 4) { return 4; }
-      if (this.data.livesRemaining <= 7) { return 3; }
-      return 2;
     },
   },
 
-  setup(props, { emit }) {
-    const data = reactive<Data>({
-      maxLife: 7,
-      livesRemaining: 7,
-      completedObjectives: [],
-    });
-
-    const restart = (lives: number) => {
-      data.maxLife = lives;
-      data.livesRemaining = lives;
-    };
-
-    const increaseDepth = () => {
-      if (data.livesRemaining > 0) data.livesRemaining -= 1;
-      if (data.livesRemaining <= 0) emit('defeated');
-    };
-
-    const completeObjective = (objectiveCode: number) => {
-      if (data.completedObjectives.indexOf(objectiveCode) < 0) {
-        data.completedObjectives.push(objectiveCode);
-        if (data.completedObjectives.length >= 4) emit('victory');
-      }
-      throw new Error(`Objective #${objectiveCode} already achieved.`);
-    };
-
-    onBeforeMount(() => {
-      if (props.demo) {
-        data.maxLife = 7;
-        data.livesRemaining = 4;
-        data.completedObjectives = [3, 2];
-      }
-    });
-
-    return {
-      data,
-      completeObjective,
-      increaseDepth,
-      restart,
-    };
+  setup() {
+    return {};
   },
 });
 </script>
