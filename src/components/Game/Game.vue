@@ -1,10 +1,11 @@
 <template>
   <section>
-    <game-board boardSize="600" />
+    <game-board :boardSize="600" />
     <game-goal-tracker
       :depthLevel="game.state.depthLevel"
       :depthMax="game.state.depthMax"
-      :goalsAchieved="game.state.goalsAchieved" />
+      :goalsAchieved="game.state.goalsAchieved"
+      :deckDiscovery="game.state.deckDiscovery" />
     <game-character-sheet
       v-for="(n, i) in game.state.survivors" :key="i" :survivorId="i"
       :roleName="game.state.survivors[i].roleName"
@@ -20,7 +21,7 @@ import { defineComponent, onBeforeMount } from 'vue';
 import GameGoalTracker from '../GameGoalTracker/GameGoalTracker.vue';
 import GameBoard from '../GameBoard/GameBoard.vue';
 import GameCharacterSheet from '../GameCharacterSheet/GameCharacterSheet.vue';
-import game from '../../lib/game';
+import game from '../../lib/Game';
 
 export default defineComponent({
   components: { GameGoalTracker, GameBoard, GameCharacterSheet },

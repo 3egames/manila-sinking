@@ -12,6 +12,9 @@
           <img v-for="(n, i) in goalsAchieved" :key="i"
           :src="`https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/${goalsAchieved[i]}.png`">
         </span>
+        <span>
+          Discovery Deck: {{ deckDiscovery.CardCount }}/28
+        </span>
       </section>
     </section>
   </section>
@@ -28,6 +31,9 @@ export default defineComponent({
       type: Array,
       default: () => [],
       validator: (prop: any) => prop.every((e: any) => typeof e === 'number'),
+    },
+    deckDiscovery: {
+      type: Object,
     },
   },
   computed: {

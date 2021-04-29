@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
-
+import Deck from './Deck'
+import CardTypes from './CardTypes'
 
 interface Survivor {
   roleName: string;
@@ -13,16 +14,36 @@ interface GameState {
   depthMax: number;
   survivors: Survivor[];
   goalsAchieved: number[];
+  deckDiscovery: Deck;
 }
 
 class GameInstance {
   currentPlayerIdx = 0;
-  state: GameState = reactive({
+  state = reactive<GameState>({
     depthLevel: 0,
     depthMax: 7,
     survivors: [],
     goalsAchieved: [],
+    deckDiscovery: new Deck(),
   });
+
+  constructor() {
+    this.resetGame()
+  }
+
+  resetGame() {
+    console.log('556')
+    // rebuild the discovery deck
+    this.state.deckDiscovery.clear()
+    this.state.deckDiscovery.addCards(CardTypes.discover.engine, 5)
+    this.state.deckDiscovery.addCards(CardTypes.discover.fuel, 5)
+    this.state.deckDiscovery.addCards(CardTypes.discover.battery, 5)
+    this.state.deckDiscovery.addCards(CardTypes.discover.tools, 5)
+    this.state.deckDiscovery.addCards(CardTypes.discover.pump, 2)
+    this.state.deckDiscovery.addCards(CardTypes.discover.jeepney, 3)
+    this.state.deckDiscovery.addCards(CardTypes.discover.flood, 3)
+    this.state.deckDiscovery.shuffle()
+  }
   
   addPlayer(player: Survivor) {
     if (this.state.survivors.length < 4) this.state.survivors.push(player);
@@ -42,6 +63,10 @@ class GameInstance {
   }
 
   switchToNextPlayer() {
+    let pop = this.state.deckDiscovery.popCard();
+    console.log(`popped a ${pop?.name} card`)
+    pop = this.state.deckDiscovery.popCard();
+    console.log(`popped a ${pop?.name} card`)
     this.state.survivors[this.currentPlayerIdx].isActive = false;
     this.currentPlayerIdx += 1;
     if (this.currentPlayerIdx >= this.state.survivors.length) this.currentPlayerIdx = 0;

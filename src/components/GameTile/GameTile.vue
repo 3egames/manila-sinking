@@ -15,7 +15,7 @@ import {
 
 export default defineComponent({
   props: {
-    tileName: { type: String, required: true },
+    tileName: { type: String },
     tileNumber: { type: Number, required: true },
     tileSize: { type: Number, required: true },
   },
