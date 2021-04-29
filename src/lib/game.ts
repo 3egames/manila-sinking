@@ -28,7 +28,6 @@ class GameInstance {
   });
 
   constructor() {
-    this.resetGame()
   }
 
   resetGame() {
