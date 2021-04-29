@@ -21,7 +21,7 @@ import { defineComponent, onBeforeMount } from 'vue';
 import GameGoalTracker from '../GameGoalTracker/GameGoalTracker.vue';
 import GameBoard from '../GameBoard/GameBoard.vue';
 import GameCharacterSheet from '../GameCharacterSheet/GameCharacterSheet.vue';
-import game from '../../lib/Game';
+import game from '../../lib/game';
 
 export default defineComponent({
   components: { GameGoalTracker, GameBoard, GameCharacterSheet },
