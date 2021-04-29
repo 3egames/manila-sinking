@@ -32,7 +32,6 @@ class GameInstance {
   }
 
   resetGame() {
-    console.log('556')
     // rebuild the discovery deck
     this.state.deckDiscovery.clear()
     this.state.deckDiscovery.addCards(CardTypes.discover.engine, 5)

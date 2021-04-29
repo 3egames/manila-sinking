@@ -7,13 +7,13 @@
         <div>Depth Level: {{ depthLevelDesc }}</div>
         <span :class="{counters: true, skull: (i) < depthLevel }"
           v-for="(n, i) in depthMax" :key="i" />
-        <div>Achieved Objectives: [{{ goalsAchieved.length }}/4]</div>
+        <div>Achieved Objectives: [{{ goalsAchieved?.length }}/4]</div>
         <span class='objective-icons'>
           <img v-for="(n, i) in goalsAchieved" :key="i"
           :src="`https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/${goalsAchieved[i]}.png`">
         </span>
         <span>
-          Discovery Deck: {{ deckDiscovery.CardCount }}/28
+          Discovery Deck: {{ deckDiscovery?.CardCount }}/28
         </span>
       </section>
     </section>
