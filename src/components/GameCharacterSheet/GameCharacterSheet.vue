@@ -13,7 +13,7 @@
       <div class="cards-section">
         <button class="card-button" v-for="(n, i) in itemsOnHand" :key="i"
           :disabled="!isActive" @click="selectItem(i, n)">
-          <img :src="`https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/${itemsOnHand[i]}.png`">
+          <img :src="itemsOnHand[i].imageUrl">
         </button>
       </div>
     </section>
@@ -33,7 +33,6 @@ export default defineComponent({
     itemsOnHand: {
       type: Array,
       default: () => [],
-      validator: (prop: any) => prop.every((e: any) => typeof e === 'number'),
     },
   },
 
