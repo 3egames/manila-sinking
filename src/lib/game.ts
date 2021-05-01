@@ -10,7 +10,7 @@ interface Survivor {
   itemsOnHand: CardType[];
 }
 
-enum GameStates {
+export enum GameStates {
   inactive = 0,
   active = 1,
   actionSelect = 2,

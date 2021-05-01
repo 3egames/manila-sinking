@@ -3,17 +3,26 @@
 The game character sheet allows us to see the characters in play and the cards they carry.
 
 ## Sample:
-<GameCharacterSheet :survivorId="1" @action="onAction" @itemSelected="onItemSelected"
-  :isActive="true" actionsRemaining="2" :itemsOnHand="[ 1, 2, 3, 4]" :ref="sRef" />
 
-#### Small screen (inactive survivor)
+### Active user on Action select state
+<GameCharacterSheet :gameState="2" :survivorId="1" :isActive="true" :actionsRemaining="2"
+  :survivorType="{ name: 'Survivor', actions: [{ title: 'move', description: 'move', type: 1 }, { title: 'test', description: 'test', type: 2 }] }"
+  @action="onAction" @itemSelected="onItemSelected" :itemsOnHand="[ { name: 'Some thing', description: 'a test item.', imageUrl: 'https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/6.png' } ]" :ref="sRef" />
+
+### Active user on Item select state
+<GameCharacterSheet :gameState="3" :survivorId="1" :isActive="true" :actionsRemaining="2"
+  :survivorType="{ name: 'Survivor', actions: [{ title: 'move', description: 'move', type: 1 }, { title: 'test', description: 'test', type: 2 }] }"
+  @action="onAction" @itemSelected="onItemSelected" :itemsOnHand="[ { name: 'Some thing', description: 'a test item.', imageUrl: 'https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/2.png' }]" :ref="sRef" />
+
+### Small screen (inactive survivor)
 <section style="width:350px">
-  <GameCharacterSheet :survivorId="2" @action="onAction" @itemSelected="onItemSelected" 
-  :itemsOnHand="[4, 4]" />
+  <GameCharacterSheet :gameState="2" :survivorId="2" 
+    :survivorType="{ name: 'Survivor', actions: [{ title: 'move', description: 'move', type: 1 }, { title: 'test', description: 'test', type: 2 }] }"
+    @action="onAction" @itemSelected="onItemSelected" :itemsOnHand="[{ name: 'Some thing', description: 'a test item.', imageUrl: 'https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/5.png' }]" />
 </section>
 
 <script setup>
-  import { ref } from 'vue';
+  import { defineComponent, ref } from 'vue';
   import GameCharacterSheet from '../../../src/components/GameCharacterSheet/GameCharacterSheet.vue'
 
   function onAction(id, actionCode) {

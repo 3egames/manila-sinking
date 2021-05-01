@@ -7,8 +7,9 @@
       :goalsAchieved="game.data.goalsAchieved"
       :deckDiscovery="game.data.deckDiscovery" />
     <game-character-sheet
-      v-for="(n, i) in game.data.survivors" :key="i" :survivorId="i"
-      :roleName="game.data.survivors[i].type.name"
+      v-for="(n, i) in game.data.survivors" :key="i"
+      :gameState="game.data.status" :survivorId="i"
+      :survivorType="game.data.survivors[i].type"
       :itemsOnHand="game.data.survivors[i].itemsOnHand"
       :isActive="game.data.survivors[i].isActive"
       :actionsRemaining="game.data.survivors[i].actionsRemaining"

@@ -1,18 +1,18 @@
 <template>
   <section class="character-sheet-border">
     <section :class="{ 'character-sheet-header': true, active: isActive  }">
-      {{ roleName }} : [{{ actionsRemaining }}/3] actions
+      {{ survivorType.name }} : [{{ actionsRemaining }}/3] actions
     </section>
     <section class="character-sheet-hand">
       <div class="action-buttons">
-        <button v-for="n in characterActions" :key="n.code" @click="selectAction(n.code)"
-          :disabled="!isActive || n.code === 99 && !canAquireobjective">
+        <button v-for="n in survivorType.actions" :key="n.code" :title="n.description"
+          @click="selectAction(n.type)" :disabled="!isActionsEnabled(n.type)" >
           {{ n.title }}
         </button>
       </div>
       <div class="cards-section">
         <button class="card-button" v-for="(n, i) in itemsOnHand" :key="i"
-          :disabled="!isActive" @click="selectItem(i, n)">
+          :disabled="!isHandCardEnabled(n)" @click="selectItem(i, n)">
           <img :src="itemsOnHand[i].imageUrl">
         </button>
       </div>
@@ -22,54 +22,21 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { GameStates } from '../../lib/game';
+import CardTypes, { CardType } from '../../lib/CardTypes';
+import { ActionTypes } from '../../lib/SurvivorTypes';
 
 export default defineComponent({
   props: {
     /** A unique survivor identifier */
+    gameState: { type: Number, required: true },
     survivorId: { type: Number, required: true },
+    survivorType: { type: Object, required: true },
     isActive: { type: Boolean, default: false },
     actionsRemaining: { type: Number, default: 0 },
-    roleName: { type: String, default: 'Survivor' },
     itemsOnHand: {
       type: Array,
       default: () => [],
-    },
-  },
-
-  computed: {
-    characterActions() {
-      // prepopulate with the common actions
-      const actionList = [
-        { title: 'Move Location', code: 1 },
-        { title: 'Assist in Flood', code: 2 },
-        { title: 'Give Objective Part', code: 3 },
-      ];
-      if (this.roleName === 'Survivor') {
-        actionList.push({ title: 'Hadouken', code: 10 });
-      }
-      // Acquire objective should appear as the last common ability.
-      actionList.push({ title: 'Acquire Objective', code: 99 });
-      return actionList;
-    },
-    // checks if survivor meets the items in hand
-    canAquireobjective() {
-      const cardCounter: Record<string, number> = {};
-      if (!this.itemsOnHand) throw new Error('itemsOnHand is not set.');
-      // since max hand is 5 and you need 4 of a kind, having 3 types
-      // of different card is a sure fail. iterate through the itemsOnHand
-      // and make sure 4 cards are of a type
-      if (this.itemsOnHand.length >= 4) {
-        for (let i = 0; i < this.itemsOnHand.length; i += 1) {
-          const key = (this.itemsOnHand[i] as number[]).toString();
-          if (!cardCounter[key]) {
-            cardCounter[key] = 1;
-          } else {
-            cardCounter[key] += 1;
-            if (cardCounter[key] >= 4) return true;
-          }
-        }
-      }
-      return false;
     },
   },
 
@@ -82,9 +49,57 @@ export default defineComponent({
       emit('itemSelected', props.survivorId, index, cardType);
     };
 
+    // checks if survivor meets the items in hand
+    function canAquireobjective() {
+      if (!props.itemsOnHand) throw new Error('itemsOnHand is not set.');
+      // since max hand is 5 and you need 4 of a kind, having 3 types
+      // of different card is a sure fail. iterate through the itemsOnHand
+      // and make sure 4 cards are of a type
+      if (props.itemsOnHand.length >= 4) {
+        const cardCounter: Record<string, number> = {};
+        for (let i = 0; i < props.itemsOnHand.length; i += 1) {
+          const key = (props.itemsOnHand[i] as CardType).name;
+          if (!cardCounter[key]) {
+            cardCounter[key] = 1;
+          } else {
+            cardCounter[key] += 1;
+            if (cardCounter[key] >= 4) return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function isActionsEnabled(actionType: ActionTypes) {
+      // !isActive || n.code === 99 && !canAquireobjective
+      if (
+        ( // Everything is enabled on actionSelect except the acquireObjective
+          props.isActive && props.gameState === GameStates.actionSelect
+          && actionType !== ActionTypes.acquireObjective
+        ) || ( // acquireObjective is enabled on the same condition if canAquireobjective = true
+          props.isActive && props.gameState === GameStates.actionSelect
+          && actionType === ActionTypes.acquireObjective && canAquireobjective()
+        )
+      ) {
+        return true;
+      }
+      return false;
+    }
+
+    function isHandCardEnabled(card: CardType) {
+      if ((props.isActive && props.gameState === GameStates.itemSelect)
+        || (card.name === CardTypes.discover.pump.name
+        || card.name === CardTypes.discover.jeepney.name)) {
+        return true;
+      }
+      return false;
+    }
+
     return {
       selectAction,
       selectItem,
+      isActionsEnabled,
+      isHandCardEnabled,
     };
   },
 });
@@ -143,7 +158,7 @@ export default defineComponent({
 }
 
 .card-button img {
-  width:50px;
-  height:50px;
+  width:40px;
+  height:40px;
 }
 </style>
