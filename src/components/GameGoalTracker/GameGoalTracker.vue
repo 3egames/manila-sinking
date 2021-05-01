@@ -13,7 +13,7 @@
           :src="`https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/${goalsAchieved[i]}.png`">
         </span>
         <span>
-          Discovery Deck: {{ deckDiscovery?.CardCount }}/28
+          Discovery Deck: {{ deckDiscovery?.CardCount }}
         </span>
       </section>
     </section>

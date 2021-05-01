@@ -5,7 +5,15 @@ export interface CardType {
 }
 
 interface CardTypesStruct {
-  discover: Record<string, CardType>;
+  discover: {
+    engine: CardType;
+    fuel: CardType;
+    battery: CardType;
+    tools: CardType;
+    pump: CardType;
+    jeepney: CardType;
+    flood: CardType;
+  };
   areas: Record<string, CardType>;
 }
 
@@ -31,15 +39,15 @@ const CardTypes: CardTypesStruct = {
       description: "Locate 4 special unique tools we need to fix the anti-flood control system.",
       imageUrl: 'https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/1.png'
     },
-    pump: {
-      name: 'Diesel Engine Water Pump',
-      description: "These Water pumps can be used to assist a flood in any area.",
-      imageUrl: ''
-    },
     jeepney: {
       name: 'Jeepney Ride',
       description: "Use these higly poluting relics to move 1 or more survivors on a tile to another.",
-      imageUrl: ''
+      imageUrl: 'https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/5.png'
+    },
+    pump: {
+      name: 'Diesel Engine Water Pump',
+      description: "These Water pumps can be used to assist a flood in any area.",
+      imageUrl: 'https://raw.githubusercontent.com/3egames/manila-sinking/main/docs/assets/cards/6.png'
     },
     flood: {
       name: 'Flood Gates Crashed!',

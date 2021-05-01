@@ -8,12 +8,20 @@ function randomDeckToDeckInsert(source: CardType[], target: CardType[]) {
 
 export default class Deck {
   cards: CardType[] =[]
+  name: string = 'Unnamed deck'
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  get Name () {
+    return this.name;
+  }
 
   addCards(card: CardType, amount: number = 1) {
     if (amount >= 1) {
       for (let i = 0; i < amount; i += 1) {
         this.cards.push(card)
-        console.log(`added a ${card.name}`)
       }
     }
   }

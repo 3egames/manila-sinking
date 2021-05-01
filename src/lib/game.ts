@@ -10,7 +10,15 @@ interface Survivor {
   itemsOnHand: CardType[];
 }
 
-interface GameState {
+enum GameStates {
+  inactive = 0,
+  active = 1,
+  actionSelect = 2,
+  itemSelect = 3,
+}
+
+interface GameData {
+  status: GameStates
   depthLevel: number;
   depthMax: number;
   survivors: Survivor[];
@@ -25,16 +33,18 @@ interface GameOptions {
 
 class GameInstance {
   currentPlayerIdx = 0
-  deckDiscoveryDiscard = new Deck()
-  deckChaosDiscard = new Deck()
+  deckDiscoveryDiscard = new Deck('Discovery Discard Pile')
+  deckChaosDiscard = new Deck('Chaos Discard Pile')
+  discardResolver:any
 
-  state = reactive<GameState>({
+  data = reactive<GameData>({
+    status: GameStates.inactive,
     depthLevel: 0,
     depthMax: 7,
     survivors: [],
     goalsAchieved: [],
-    deckDiscovery: new Deck(),
-    deckChaos: new Deck()
+    deckDiscovery: new Deck('Discovery Deck'),
+    deckChaos: new Deck('Chaos Deck')
   });
 
   constructor() {
@@ -43,67 +53,114 @@ class GameInstance {
 
   resetGame(options: GameOptions) {
     // rebuild the discovery deck
-    this.state.deckDiscovery.clear()
-    this.state.deckDiscovery.addCards(CardTypes.discover.engine, 5)
-    this.state.deckDiscovery.addCards(CardTypes.discover.fuel, 5)
-    this.state.deckDiscovery.addCards(CardTypes.discover.battery, 5)
-    this.state.deckDiscovery.addCards(CardTypes.discover.tools, 5)
-    this.state.deckDiscovery.addCards(CardTypes.discover.pump, 2)
-    this.state.deckDiscovery.addCards(CardTypes.discover.jeepney, 3)
-    this.state.deckDiscovery.addCards(CardTypes.discover.flood, 3)
-    this.state.deckDiscovery.shuffle()
+    this.data.deckDiscovery.clear()
+    this.data.deckDiscovery.addCards(CardTypes.discover.engine, 5)
+    this.data.deckDiscovery.addCards(CardTypes.discover.fuel, 5)
+    this.data.deckDiscovery.addCards(CardTypes.discover.battery, 5)
+    this.data.deckDiscovery.addCards(CardTypes.discover.tools, 5)
+    this.data.deckDiscovery.addCards(CardTypes.discover.pump, 2)
+    this.data.deckDiscovery.addCards(CardTypes.discover.jeepney, 3)
+    this.data.deckDiscovery.addCards(CardTypes.discover.flood, 3)
+    this.data.deckDiscovery.shuffle()
     //rebuild the chaos deck
-    this.state.deckChaos.clear()
+    this.data.deckChaos.clear()
     for (const key in CardTypes.areas) {
-      this.state.deckChaos.addCards(CardTypes.areas[key])
+      this.data.deckChaos.addCards(CardTypes.areas[key])
     }
     // add new players
-    this.state.survivors = []
+    this.data.survivors = []
     for (let i = 0; i < options.numberOfPlayers; i += 1) {
-      this.state.survivors.push({ 
+      this.data.survivors.push({ 
         type: SurvivorTypes.engineer, // need to randomize this
-        isActive: this.state.survivors.length === 0,
+        isActive: this.data.survivors.length === 0,
         actionsRemaining: 3,
         itemsOnHand: []
       })
     }
+    this.data.status = GameStates.actionSelect
   }
 
-  onPlayerAction(idx: number, actionCode: number) {
-    if (!this.state.survivors[idx].isActive) throw new Error('Player is not active'); 
-    if (this.state.survivors[idx].actionsRemaining <= 0) throw new Error('Player out of actions'); 
-    this.state.survivors[idx].actionsRemaining -= 1;
-    if (this.state.survivors[idx].actionsRemaining <= 0) this.switchToNextPlayer();
-    console.log(`survivor #${idx} performed action #${actionCode}`);
+  async onPlayerSelectedAction(idx: number, actionCode: number) {
+    if (this.data.status !== GameStates.actionSelect) throw new Error('GAME_NOT_IN_ACTION_SELECT_MODE');
+    if (!this.data.survivors[idx].isActive) throw new Error('Player is not active'); 
+    if (this.data.survivors[idx].actionsRemaining <= 0) throw new Error('Player out of actions'); 
+    this.data.survivors[idx].actionsRemaining -= 1;
+    console.log(`Survivor #${idx} performed action '#${actionCode}'`);
+    if (this.data.survivors[idx].actionsRemaining <= 0) {
+      console.log(`Survivor #${idx} has used all his/her actions...`);
+      await this.drawFromDiscoveryDeck();
+      await this.drawFromDiscoveryDeck();
+      await this.switchToNextPlayer();
+    }
   }
 
-  switchToNextPlayer() {
-    let pop = this.state.deckDiscovery.popCard();
-    this.state.survivors[this.currentPlayerIdx].itemsOnHand.push(pop as CardType)
-    console.log(`popped a ${pop?.name} card`)
-    pop = this.state.deckDiscovery.popCard();
-    this.state.survivors[this.currentPlayerIdx].itemsOnHand.push(pop as CardType)
-    console.log(`popped a ${pop?.name} card`)
-    this.state.survivors[this.currentPlayerIdx].isActive = false;
+  async drawFromDiscoveryDeck() {
+    if (this.data.status === GameStates.inactive) throw new Error('GAME_NOT_ACTIVE');
+    if (this.data.deckDiscovery.CardCount <= 0) this.refreshDiscorveryDeck();
+    let card = this.data.deckDiscovery.popCard();
+    console.log(`Survivor#${this.currentPlayerIdx} discovered an item: '${card?.name}'`)
+    if (card?.name === CardTypes.discover.flood.name) {
+      this.increaseDepthLevel()
+      this.deckDiscoveryDiscard.addCards(card);
+    } else { // add card to hand
+      this.data.survivors[this.currentPlayerIdx].itemsOnHand.push(card as CardType)
+      if (this.data.survivors[this.currentPlayerIdx].itemsOnHand.length > 5) {
+        console.log(`Survivor#${this.currentPlayerIdx} has reached his/her max carry limit and must discard an item...`)
+        const target: any = await this.discardMode()
+        console.log(`Survivor#${this.currentPlayerIdx} discards '${target.itemType.name}'`);
+        this.data.survivors[this.currentPlayerIdx].itemsOnHand.splice(target.itemIdx, 1)
+        this.deckDiscoveryDiscard.addCards(target.itemType as CardType);
+        this.data.status = GameStates.actionSelect
+      }
+    }
+  }
+
+  async discardMode() {
+    this.data.status = GameStates.itemSelect
+    return new Promise((resolve) => {
+      this.discardResolver = resolve;
+    });
+  }
+
+  // reshuffles the discovery discard pile back into its deck
+  refreshDiscorveryDeck() {
+    while (this.deckDiscoveryDiscard.CardCount > 0) {
+      this.data.deckDiscovery.addCards(this.deckDiscoveryDiscard.popCard()!);
+    }
+    this.data.deckDiscovery.shuffle();
+    console.log('Discovery deck refreshed!')
+  }
+
+  async switchToNextPlayer() {
+    if (this.data.status === GameStates.inactive) throw new Error('GAME_NOT_ACTIVE');
+    this.data.survivors[this.currentPlayerIdx].isActive = false;
     this.currentPlayerIdx += 1;
-    if (this.currentPlayerIdx >= this.state.survivors.length) this.currentPlayerIdx = 0;
-    this.state.survivors[this.currentPlayerIdx].isActive = true;
-    this.state.survivors[this.currentPlayerIdx].actionsRemaining = 3
+    if (this.currentPlayerIdx >= this.data.survivors.length) this.currentPlayerIdx = 0;
+    this.data.survivors[this.currentPlayerIdx].isActive = true;
+    this.data.survivors[this.currentPlayerIdx].actionsRemaining = 3
+    this.data.status === GameStates.actionSelect
+    console.log(`Switched to survivor #${this.currentPlayerIdx}!`);
     // todo
-    this.increaseDepthLevel()
   }
 
   increaseDepthLevel() {
-    if (this.state.depthLevel >= this.state.depthMax) throw new Error('Depth level already maxed');
-    this.state.depthLevel += 1;
-    if (this.state.depthLevel >= this.state.depthMax) { 
+    if (this.data.status === GameStates.inactive) throw new Error('GAME_NOT_ACTIVE');
+    if (this.data.depthLevel >= this.data.depthMax) throw new Error('Depth level already maxed');
+    this.data.depthLevel += 1;
+    console.log(`Depth level increased and is now ${this.data.depthLevel}/${this.data.depthMax}`);
+    if (this.data.depthLevel >= this.data.depthMax) { 
+      this.data.survivors[this.currentPlayerIdx].isActive = false;
+      this.data.status = GameStates.inactive;
       alert('GAME OVER, refresh to reset for now');
-      this.state.survivors[this.currentPlayerIdx].isActive = false;
     }
   }
 
   onPlayerItemSelected(idx: number, itemIdx: number, itemType: number) {
-    alert(`survivor #${idx} selected item on index ${itemIdx} of type #${itemType}`);
+    if (this.data.status !== GameStates.itemSelect) throw new Error('GAME_NOT_IN_ITEM_SELECT_MODE');
+    if (this.discardResolver) {
+      this.discardResolver({ itemIdx, itemType })
+      this.discardResolver = null
+    }
   }
 }
 

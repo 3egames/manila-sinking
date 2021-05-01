@@ -2,16 +2,16 @@
   <section>
     <game-board :boardSize="600" />
     <game-goal-tracker
-      :depthLevel="game.state.depthLevel"
-      :depthMax="game.state.depthMax"
-      :goalsAchieved="game.state.goalsAchieved"
-      :deckDiscovery="game.state.deckDiscovery" />
+      :depthLevel="game.data.depthLevel"
+      :depthMax="game.data.depthMax"
+      :goalsAchieved="game.data.goalsAchieved"
+      :deckDiscovery="game.data.deckDiscovery" />
     <game-character-sheet
-      v-for="(n, i) in game.state.survivors" :key="i" :survivorId="i"
-      :roleName="game.state.survivors[i].type.name"
-      :itemsOnHand="game.state.survivors[i].itemsOnHand"
-      :isActive="game.state.survivors[i].isActive"
-      :actionsRemaining="game.state.survivors[i].actionsRemaining"
+      v-for="(n, i) in game.data.survivors" :key="i" :survivorId="i"
+      :roleName="game.data.survivors[i].type.name"
+      :itemsOnHand="game.data.survivors[i].itemsOnHand"
+      :isActive="game.data.survivors[i].isActive"
+      :actionsRemaining="game.data.survivors[i].actionsRemaining"
       @action="onPlayerAction" @itemSelected="onPlayerItemSelected" />
   </section>
 </template>
@@ -32,12 +32,12 @@ export default defineComponent({
       });
     });
 
-    const onPlayerAction = (idx: number, actionCode: number) => {
-      game.onPlayerAction(idx, actionCode);
+    const onPlayerAction = async (idx: number, actionCode: number) => {
+      await game.onPlayerSelectedAction(idx, actionCode);
     };
 
-    const onPlayerItemSelected = (idx: number, itemIdx: number, itemType: number) => {
-      game.onPlayerItemSelected(idx, itemIdx, itemType);
+    const onPlayerItemSelected = async (idx: number, itemIdx: number, itemType: number) => {
+      await game.onPlayerItemSelected(idx, itemIdx, itemType);
     };
 
     return {
