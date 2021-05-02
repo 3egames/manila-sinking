@@ -12,7 +12,7 @@ export interface SurvivorType {
 
 export enum ActionTypes {
   move = 1,
-  assistFlood = 2,
+  assistChaos = 2,
   giveItem = 3,
   acquireObjective = 4
 }
@@ -30,9 +30,9 @@ const moveAction: Action = {
 }
 
 const assistAction: Action = {
-  title: 'Assist in Flood',
-  description: 'Assist in a nearby flooded area',
-  type: ActionTypes.assistFlood
+  title: 'Assist against chaos',
+  description: 'Supress the chaos in a nearby affected area',
+  type: ActionTypes.assistChaos
 }
 
 const giveAction: Action = {
