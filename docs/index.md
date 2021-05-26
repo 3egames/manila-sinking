@@ -1,6 +1,5 @@
 ---
 home: true
-heroImage: /assets/logo.png
 heroAlt: Logo image
 heroText: Manila is Sinking
 tagline: cooperate or die
@@ -69,7 +68,7 @@ Upon selecting the number of survivors and dificulty level, a random survivor is
           * The surivor's character sheet is removed from play.
       * discard the *Chaos Card* into the *Chaos Discard Pile*
 
-### Survivor Role
+### The Survivors
 * **Politician** - Surprisingly there are a few good men left. The politician has influential power to send men to aide in times of need.
 * **Engineer** - Masters of technology, the engineer carries wisdom and tools that allows them to fix issues they are within.
 * **Bearer** - Strongmen who are built for moving things who can carry more than the average man.

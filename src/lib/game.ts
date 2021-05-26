@@ -31,11 +31,22 @@ interface GameOptions {
   numberOfPlayers: number
 }
 
+export interface DialogConfig {
+  headerText: string;
+  bodyText: string;
+  bodyImageUrl?: string;
+}
+
+type ShowDialogCallback = (config: DialogConfig) => Promise<{
+  action: string
+}>
+
 class GameInstance {
   currentPlayerIdx = 0
   deckDiscoveryDiscard = new Deck('Discovery Discard Pile')
   deckChaosDiscard = new Deck('Chaos Discard Pile')
   discardResolver:any
+  showDialog: ShowDialogCallback
 
   data = reactive<GameData>({
     status: GameStates.inactive,
@@ -49,6 +60,10 @@ class GameInstance {
 
   constructor() {
     this.resetGame({ numberOfPlayers: 2 })
+  }
+
+  bindDialogCallback(showDialog: ShowDialogCallback) {
+    this.showDialog = showDialog
   }
 
   resetGame(options: GameOptions) {
@@ -103,7 +118,12 @@ class GameInstance {
       this.increaseDepthLevel()
       this.deckDiscoveryDiscard.addCards(card);
     } else { // add card to hand
-      this.data.survivors[this.currentPlayerIdx].itemsOnHand.push(card as CardType)
+      this.data.survivors[this.currentPlayerIdx].itemsOnHand.push(card as CardType)    
+      await this.showDialog({ 
+        headerText: `Survivor ${this.currentPlayerIdx + 1} found an item!`,
+        bodyText: `Survivor ${this.currentPlayerIdx + 1} receives ${card?.name}`,
+        bodyImageUrl: card?.imageUrl
+      });
       if (this.data.survivors[this.currentPlayerIdx].itemsOnHand.length > 5) {
         console.log(`Survivor#${this.currentPlayerIdx} has reached his/her max carry limit and must discard an item...`)
         const target: any = await this.discardMode()

@@ -1,5 +1,11 @@
 <template>
   <section>
+    <game-dialog ref="gameDialogRef" :headerTitle="data.dialogHeader">
+      <div>{{data.dialogMessage}}</div>
+      <div class="dialog-image-container">
+        <img class="dialogImage" :src="data.bodyImageUrl" />
+      </div>
+    </game-dialog>
     <game-board :boardSize="600" />
     <game-goal-tracker
       :depthLevel="game.data.depthLevel"
@@ -18,19 +24,29 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount } from 'vue';
+import { defineComponent, onBeforeMount, reactive, ref } from 'vue';
 import GameGoalTracker from '../GameGoalTracker/GameGoalTracker.vue';
 import GameBoard from '../GameBoard/GameBoard.vue';
 import GameCharacterSheet from '../GameCharacterSheet/GameCharacterSheet.vue';
-import game from '../../lib/game';
+import GameDialog from '../GameDialog/GameDialog.vue';
+import game, { DialogConfig } from '../../lib/game';
+
+interface Data {
+  dialogHeader: string;
+  dialogMessage: string;
+  bodyImageUrl?: string;
+}
 
 export default defineComponent({
-  components: { GameGoalTracker, GameBoard, GameCharacterSheet },
+  components: {
+    GameGoalTracker, GameBoard, GameCharacterSheet, GameDialog,
+  },
   setup() {
-    onBeforeMount(() => {
-      game.resetGame({
-        numberOfPlayers: 3,
-      });
+    const gameDialogRef = ref<any>();
+    const data = reactive<Data>({
+      dialogMessage: '',
+      dialogHeader: '',
+      bodyImageUrl: '',
     });
 
     const onPlayerAction = async (idx: number, actionCode: number) => {
@@ -41,11 +57,43 @@ export default defineComponent({
       await game.onPlayerItemSelected(idx, itemIdx, itemType);
     };
 
+    async function showDialog(config: DialogConfig) {
+      data.dialogMessage = config.bodyText;
+      data.dialogHeader = config.headerText;
+      data.bodyImageUrl = config.bodyImageUrl;
+      const result = await gameDialogRef.value.show();
+      console.log(result);
+      return result;
+    }
+
+    onBeforeMount(() => {
+      game.bindDialogCallback(showDialog);
+      game.resetGame({
+        numberOfPlayers: 3,
+      });
+    });
+
     return {
+      data,
       game,
+      gameDialogRef,
       onPlayerAction,
       onPlayerItemSelected,
+      showDialog,
     };
   },
 });
 </script>
+
+<style scoped>
+.dialog-image-container {
+  text-align: center;
+}
+.dialogImage {
+  width: 150px;
+  border: 1px solid #777;
+  border-radius: 5px;
+  padding: 5px;
+  margin: 5px;
+}
+</style>
