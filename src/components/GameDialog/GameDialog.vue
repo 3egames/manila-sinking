@@ -60,8 +60,8 @@ export default defineComponent({
   position: fixed; /* Positioning and size */
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-color: rgba(128,128,128,0.5); /* color */
   z-index: 999999;
 }
